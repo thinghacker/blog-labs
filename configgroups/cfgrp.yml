@@ -1,0 +1,23 @@
+name: cfgrp
+
+topology:
+  defaults:
+    kind: vr-sros
+    image: vrnetlab/vr-sros:23.7.R1
+    license: ~/23.x_SR_OS_VSR-SIM_License.txt
+    type: sr-1
+
+  nodes:
+    Hub:
+    R1:
+      startup-config: routerconfigs/R1.txt
+    R2:
+      startup-config: routerconfigs/R2.txt
+    R3:
+      startup-config: routerconfigs/R3.txt
+
+  links:
+    - endpoints: [Hub:eth1, R1:eth1]
+    - endpoints: [Hub:eth2, R2:eth1]
+    - endpoints: [Hub:eth3, R3:eth1]
+      

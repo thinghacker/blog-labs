@@ -1,0 +1,149 @@
+    /configure policy-options { prefix-list "DEFAULT" prefix 0.0.0.0/0 type exact }
+    /configure policy-options prefix-list "LINK-NETS" prefix 10.255.1.0/24 type range start-length 30
+    /configure policy-options prefix-list "LINK-NETS" prefix 10.255.1.0/24 type range end-length 30
+    /configure policy-options { prefix-list "SYSTEM" prefix 10.1.1.1/32 type exact }
+    /configure policy-options policy-statement "RRC" entry 10 from interface ["SYSTEM"]
+    /configure policy-options policy-statement "RRC" entry 10 to protocol name [bgp-label]
+    /configure policy-options policy-statement "RRC" entry 10 action action-type accept
+    /configure policy-options policy-statement "RRC" entry 20 from prefix-list ["DEFAULT"]
+    /configure policy-options policy-statement "RRC" entry 20 to protocol name [bgp-label]
+    /configure policy-options policy-statement "RRC" entry 20 action action-type reject
+    /configure policy-options policy-statement "RRC" entry 30 from prefix-list ["LINK-NETS"]
+    /configure policy-options policy-statement "RRC" entry 30 to protocol name [bgp-label]
+    /configure policy-options policy-statement "RRC" entry 30 action action-type reject
+    /configure policy-options policy-statement "RRC" entry 40 to protocol name [bgp-label]
+    /configure policy-options policy-statement "RRC" entry 40 action action-type accept
+    /configure policy-options policy-statement "RRC" entry 40 action next-hop self
+    /configure policy-options policy-statement "RRC" default-action action-type accept
+    /configure port 1/1/1 admin-state enable
+    /configure port 1/1/1 description "RED-R1 1/1/1"
+    /configure port 1/1/1 ethernet autonegotiate false
+    /configure port 1/1/1 ethernet encap-type null
+    /configure port 1/1/1 ethernet mtu 9192
+    /configure port 1/1/1 ethernet speed 1000
+    /configure port 1/1/2 admin-state enable
+    /configure port 1/1/2 description "RED-R2 1/1/1"
+    /configure port 1/1/2 ethernet autonegotiate false
+    /configure port 1/1/2 ethernet encap-type null
+    /configure port 1/1/2 ethernet mtu 9192
+    /configure port 1/1/2 ethernet speed 1000
+    /configure port 1/1/3 admin-state enable
+    /configure port 1/1/3 description "BLUE-R1 1/1/1"
+    /configure port 1/1/3 ethernet autonegotiate false
+    /configure port 1/1/3 ethernet encap-type null
+    /configure port 1/1/3 ethernet mtu 9192
+    /configure port 1/1/3 ethernet speed 1000
+    /configure router "Base" autonomous-system 64512
+    /configure router "Base" router-id 10.1.1.1
+    /configure router "Base" interface "BLUE-R1" admin-state enable
+    /configure router "Base" interface "BLUE-R1" port 1/1/3
+    /configure router "Base" interface "BLUE-R1" ipv4 bfd admin-state enable
+    /configure router "Base" interface "BLUE-R1" ipv4 bfd transmit-interval 300
+    /configure router "Base" interface "BLUE-R1" ipv4 bfd receive 300
+    /configure router "Base" interface "BLUE-R1" ipv4 bfd multiplier 3
+    /configure router "Base" interface "BLUE-R1" ipv4 primary address 10.255.1.5
+    /configure router "Base" interface "BLUE-R1" ipv4 primary prefix-length 30
+    /configure router "Base" interface "RED-R1" admin-state enable
+    /configure router "Base" interface "RED-R1" port 1/1/1
+    /configure router "Base" interface "RED-R1" ipv4 bfd admin-state enable
+    /configure router "Base" interface "RED-R1" ipv4 bfd transmit-interval 300
+    /configure router "Base" interface "RED-R1" ipv4 bfd receive 300
+    /configure router "Base" interface "RED-R1" ipv4 bfd multiplier 3
+    /configure router "Base" interface "RED-R1" ipv4 primary address 10.255.1.1
+    /configure router "Base" interface "RED-R1" ipv4 primary prefix-length 30
+    /configure router "Base" interface "RED-R2" admin-state enable
+    /configure router "Base" interface "RED-R2" port 1/1/2
+    /configure router "Base" interface "RED-R2" ipv4 bfd admin-state enable
+    /configure router "Base" interface "RED-R2" ipv4 bfd transmit-interval 300
+    /configure router "Base" interface "RED-R2" ipv4 bfd receive 300
+    /configure router "Base" interface "RED-R2" ipv4 bfd multiplier 3
+    /configure router "Base" interface "RED-R2" ipv4 primary address 10.255.1.9
+    /configure router "Base" interface "RED-R2" ipv4 primary prefix-length 30
+    /configure router "Base" interface "system" ipv4 bfd admin-state enable
+    /configure router "Base" interface "system" ipv4 bfd transmit-interval 300
+    /configure router "Base" interface "system" ipv4 bfd receive 300
+    /configure router "Base" interface "system" ipv4 bfd multiplier 3
+    /configure router "Base" interface "system" ipv4 primary address 10.1.1.1
+    /configure router "Base" interface "system" ipv4 primary prefix-length 32
+    /configure router "Base" bgp admin-state enable
+    /configure router "Base" bgp bfd-liveness true
+    /configure router "Base" bgp advertise-inactive true
+    /configure router "Base" bgp rapid-update vpn-ipv4 true
+    /configure router "Base" bgp rapid-update l2-vpn true
+    /configure router "Base" bgp rapid-update label-ipv4 true
+    /configure router "Base" bgp next-hop-resolution labeled-routes transport-tunnel family label-ipv4 resolution any
+    /configure router "Base" bgp group "IBGP_RRC" peer-as 64512
+    /configure router "Base" bgp group "IBGP_RRC" local-address 10.1.1.1
+    /configure router "Base" bgp group "IBGP_RRC" aigp true
+    /configure router "Base" bgp group "IBGP_RRC" bfd-liveness true
+    /configure router "Base" bgp group "IBGP_RRC" split-horizon true
+    /configure router "Base" bgp group "IBGP_RRC" family vpn-ipv4 true
+    /configure router "Base" bgp group "IBGP_RRC" family l2-vpn true
+    /configure router "Base" bgp group "IBGP_RRC" family label-ipv4 true
+    /configure router "Base" bgp group "IBGP_RRC" cluster cluster-id 10.1.1.1
+    /configure router "Base" bgp group "IBGP_RRC" add-paths label-ipv4 send 3
+    /configure router "Base" bgp group "IBGP_RRC" add-paths label-ipv4 receive true
+    /configure router "Base" bgp group "IBGP_RRC" export policy ["RRC"]
+    /configure router "Base" bgp neighbor "10.0.1.1" description "RED-R1"
+    /configure router "Base" bgp neighbor "10.0.1.1" group "IBGP_RRC"
+    /configure router "Base" bgp neighbor "10.0.1.2" description "RED-R2"
+    /configure router "Base" bgp neighbor "10.0.1.2" group "IBGP_RRC"
+    /configure router "Base" bgp neighbor "10.0.2.1" description "BLUE-R1"
+    /configure router "Base" bgp neighbor "10.0.2.1" group "IBGP_RRC"
+    /configure router "Base" mpls admin-state enable
+    /configure router "Base" mpls interface "BLUE-R1" admin-state enable
+    /configure router "Base" mpls interface "RED-R1" admin-state enable
+    /configure router "Base" mpls interface "RED-R2" admin-state enable
+    /configure router "Base" mpls interface "system" admin-state enable
+    /configure router "Base" mpls path "LOOSE" admin-state enable
+    /configure router "Base" mpls lsp "BLUE-R1" admin-state enable
+    /configure router "Base" mpls lsp "BLUE-R1" type p2p-rsvp
+    /configure router "Base" mpls lsp "BLUE-R1" to 10.0.2.1
+    /configure router "Base" mpls lsp "BLUE-R1" rsvp-resv-style ff
+    /configure router "Base" mpls lsp "BLUE-R1" adspec true
+    /configure router "Base" mpls lsp "BLUE-R1" path-computation-method local-cspf
+    /configure router "Base" mpls lsp "BLUE-R1" fast-reroute frr-method one-to-one
+    /configure router "Base" { mpls lsp "BLUE-R1" primary "LOOSE" }
+    /configure router "Base" mpls lsp "RED-R1" admin-state enable
+    /configure router "Base" mpls lsp "RED-R1" type p2p-rsvp
+    /configure router "Base" mpls lsp "RED-R1" to 10.0.1.1
+    /configure router "Base" mpls lsp "RED-R1" rsvp-resv-style ff
+    /configure router "Base" mpls lsp "RED-R1" adspec true
+    /configure router "Base" mpls lsp "RED-R1" path-computation-method local-cspf
+    /configure router "Base" mpls lsp "RED-R1" fast-reroute frr-method one-to-one
+    /configure router "Base" { mpls lsp "RED-R1" primary "LOOSE" }
+    /configure router "Base" mpls lsp "RED-R2" admin-state enable
+    /configure router "Base" mpls lsp "RED-R2" type p2p-rsvp
+    /configure router "Base" mpls lsp "RED-R2" to 10.0.1.2
+    /configure router "Base" mpls lsp "RED-R2" rsvp-resv-style ff
+    /configure router "Base" mpls lsp "RED-R2" adspec true
+    /configure router "Base" mpls lsp "RED-R2" path-computation-method local-cspf
+    /configure router "Base" mpls lsp "RED-R2" fast-reroute frr-method one-to-one
+    /configure router "Base" { mpls lsp "RED-R2" primary "LOOSE" }
+    /configure router "Base" ospf 0 admin-state enable
+    /configure router "Base" ospf 0 reference-bandwidth 1000000000000
+    /configure router "Base" ospf 0 traffic-engineering true
+    /configure router "Base" ospf 0 area 0.0.0.0 interface "system" passive true
+    /configure router "Base" ospf 0 area 0.0.0.1 stub summaries false
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "RED-R1" admin-state enable
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "RED-R1" interface-type point-to-point
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "RED-R1" metric 100
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "RED-R1" bfd-liveness remain-down-on-failure true
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "RED-R2" admin-state enable
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "RED-R2" interface-type point-to-point
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "RED-R2" metric 100
+    /configure router "Base" ospf 0 area 0.0.0.2 stub summaries false
+    /configure router "Base" ospf 0 area 0.0.0.2 interface "BLUE-R1" admin-state enable
+    /configure router "Base" ospf 0 area 0.0.0.2 interface "BLUE-R1" interface-type point-to-point
+    /configure router "Base" ospf 0 area 0.0.0.2 interface "BLUE-R1" metric 100
+    /configure router "Base" ospf 0 area 0.0.0.2 interface "BLUE-R1" bfd-liveness remain-down-on-failure true
+    /configure router "Base" rsvp admin-state enable
+    /configure router "Base" rsvp implicit-null-label true
+    /configure router "Base" rsvp interface "BLUE-R1" admin-state enable
+    /configure router "Base" rsvp interface "BLUE-R1" bfd-liveness true
+    /configure router "Base" rsvp interface "RED-R1" admin-state enable
+    /configure router "Base" rsvp interface "RED-R1" bfd-liveness true
+    /configure router "Base" rsvp interface "RED-R2" admin-state enable
+    /configure router "Base" rsvp interface "RED-R2" bfd-liveness true
+    /configure router "Base" rsvp interface "system" bfd-liveness true
+

@@ -1,0 +1,63 @@
+name: vpls
+
+topology:
+  defaults:
+      kind: vr-sros
+      image: vrnetlab/vr-sros:23.10.R1
+      license: ~/23.x_SR_OS_VSR-SIM_License.txt
+      type: ixr-e-small
+      binds:
+        - pysros-scripts/:/tftpboot/pysros-scripts/
+  nodes:
+    ABR:
+      startup-config: base-configs/ABR.partial
+    RED-R1:
+      startup-config: base-configs/RED-R1.partial
+    RED-R2:
+      startup-config: base-configs/RED-R2.partial
+    BLUE-R1:
+      startup-config: base-configs/BLUE-R1.partial
+    RED-R1-CLIENT:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - "ip link add link eth1 name eth1.100 type vlan id 100"
+        - "ip addr add 172.16.101.1/24 dev eth1.100"
+        - "ip link set dev eth1.100 up"
+        - "ip route add 172.16.0.0/16 via 172.16.101.254"  
+
+        - "ip link add link eth1 name eth1.600 type vlan id 600"
+        - "ip addr add 172.16.200.1/24 dev eth1.600"
+        - "ip link set dev eth1.600 up"          
+    RED-R2-CLIENT:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - "ip link add link eth1 name eth1.100 type vlan id 100"
+        - "ip addr add 172.16.102.1/24 dev eth1.100"
+        - "ip link set dev eth1.100 up"
+        - "ip route add 172.16.0.0/16 via 172.16.102.254"  
+  
+        - "ip link add link eth1 name eth1.600 type vlan id 600"
+        - "ip addr add 172.16.200.2/24 dev eth1.600"
+        - "ip link set dev eth1.600 up"        
+    BLUE-R1-CLIENT:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - "ip link add link eth1 name eth1.100 type vlan id 100"
+        - "ip addr add 172.16.103.1/24 dev eth1.100"
+        - "ip link set dev eth1.100 up"
+        - "ip route add 172.16.0.0/16 via 172.16.103.254"
+
+        - "ip link add link eth1 name eth1.600 type vlan id 600"
+        - "ip addr add 172.16.200.3/24 dev eth1.600"
+        - "ip link set dev eth1.600 up"
+  links:
+    - endpoints: [ABR:eth1, RED-R1:eth1]
+    - endpoints: [ABR:eth2, RED-R2:eth1]
+    - endpoints: [ABR:eth3, BLUE-R1:eth1]
+    - endpoints: [RED-R1:eth2, RED-R2:eth2]  
+    - endpoints: [RED-R1:eth3, RED-R1-CLIENT:eth1]
+    - endpoints: [RED-R2:eth3, RED-R2-CLIENT:eth1]
+    - endpoints: [BLUE-R1:eth3, BLUE-R1-CLIENT:eth1]

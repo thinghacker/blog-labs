@@ -1,0 +1,114 @@
+    /configure policy-options { prefix-list "ROUTER-ACCESS-NET" prefix 10.0.1.0/24 type longer }
+    /configure policy-options prefix-list "SYSTEM" prefix 10.0.1.0/24 type range start-length 32
+    /configure policy-options prefix-list "SYSTEM" prefix 10.0.1.0/24 type range end-length 32
+    /configure policy-options policy-statement "EXPORT-TO-ABR" entry 10 description "Advertise Router System Address into BGP-LU"
+    /configure policy-options policy-statement "EXPORT-TO-ABR" entry 10 from prefix-list ["SYSTEM"]
+    /configure policy-options policy-statement "EXPORT-TO-ABR" entry 10 from protocol name [direct]
+    /configure policy-options policy-statement "EXPORT-TO-ABR" entry 10 to protocol name [bgp-label]
+    /configure policy-options policy-statement "EXPORT-TO-ABR" entry 10 action action-type accept
+    /configure policy-options policy-statement "EXPORT-TO-ABR" entry 20 to protocol name [bgp-label]
+    /configure policy-options policy-statement "EXPORT-TO-ABR" entry 20 action action-type reject
+    /configure policy-options policy-statement "EXPORT-TO-ABR" default-action action-type accept
+    /configure policy-options policy-statement "PS-LSP-AUTOMESH" entry 10 from prefix-list ["ROUTER-ACCESS-NET"]
+    /configure policy-options policy-statement "PS-LSP-AUTOMESH" entry 10 action action-type accept
+    /configure port 1/1/1 admin-state enable
+    /configure port 1/1/1 description "ABR 1/1/2"
+    /configure port 1/1/1 ethernet autonegotiate false
+    /configure port 1/1/1 ethernet encap-type null
+    /configure port 1/1/1 ethernet mtu 9192
+    /configure port 1/1/1 ethernet speed 1000
+    /configure port 1/1/2 admin-state enable
+    /configure port 1/1/2 description "RED-R1 1/1/2"
+    /configure port 1/1/2 ethernet autonegotiate false
+    /configure port 1/1/2 ethernet mode network
+    /configure port 1/1/2 ethernet encap-type null
+    /configure port 1/1/2 ethernet mtu 9192
+    /configure port 1/1/2 ethernet speed 1000
+    /configure port 1/1/3 admin-state enable
+    /configure port 1/1/3 description "RED-R2-CLIENT (linux) eth1"
+    /configure port 1/1/3 ethernet mode access
+    /configure port 1/1/3 ethernet encap-type dot1q
+    /configure port 1/1/3 ethernet mtu 9192
+    /configure router "Base" autonomous-system 64512
+    /configure router "Base" router-id 10.0.1.2
+    /configure router "Base" interface "ABR" admin-state enable
+    /configure router "Base" interface "ABR" port 1/1/1
+    /configure router "Base" interface "ABR" ipv4 bfd admin-state enable
+    /configure router "Base" interface "ABR" ipv4 bfd transmit-interval 300
+    /configure router "Base" interface "ABR" ipv4 bfd receive 300
+    /configure router "Base" interface "ABR" ipv4 bfd multiplier 3
+    /configure router "Base" interface "ABR" ipv4 primary address 10.255.1.10
+    /configure router "Base" interface "ABR" ipv4 primary prefix-length 30
+    /configure router "Base" interface "RED-R1" admin-state enable
+    /configure router "Base" interface "RED-R1" port 1/1/2
+    /configure router "Base" interface "RED-R1" ipv4 bfd admin-state enable
+    /configure router "Base" interface "RED-R1" ipv4 bfd transmit-interval 300
+    /configure router "Base" interface "RED-R1" ipv4 bfd receive 300
+    /configure router "Base" interface "RED-R1" ipv4 bfd multiplier 3
+    /configure router "Base" interface "RED-R1" ipv4 primary address 10.255.1.14
+    /configure router "Base" interface "RED-R1" ipv4 primary prefix-length 30
+    /configure router "Base" interface "system" ipv4 bfd admin-state enable
+    /configure router "Base" interface "system" ipv4 bfd transmit-interval 300
+    /configure router "Base" interface "system" ipv4 bfd receive 300
+    /configure router "Base" interface "system" ipv4 bfd multiplier 3
+    /configure router "Base" interface "system" ipv4 primary address 10.0.1.2
+    /configure router "Base" interface "system" ipv4 primary prefix-length 32
+    /configure router "Base" bgp admin-state enable
+    /configure router "Base" bgp bfd-liveness true
+    /configure router "Base" bgp advertise-inactive true
+    /configure router "Base" bgp rapid-update vpn-ipv4 true
+    /configure router "Base" bgp rapid-update l2-vpn true
+    /configure router "Base" bgp rapid-update label-ipv4 true
+    /configure router "Base" bgp next-hop-resolution labeled-routes transport-tunnel family label-ipv4 resolution any
+    /configure router "Base" bgp group "IBGP_ABR" peer-as 64512
+    /configure router "Base" bgp group "IBGP_ABR" local-address 10.0.1.2
+    /configure router "Base" bgp group "IBGP_ABR" aigp true
+    /configure router "Base" bgp group "IBGP_ABR" bfd-liveness true
+    /configure router "Base" bgp group "IBGP_ABR" family vpn-ipv4 true
+    /configure router "Base" bgp group "IBGP_ABR" family l2-vpn true
+    /configure router "Base" bgp group "IBGP_ABR" family label-ipv4 true
+    /configure router "Base" bgp group "IBGP_ABR" add-paths label-ipv4 send 3
+    /configure router "Base" bgp group "IBGP_ABR" add-paths label-ipv4 receive true
+    /configure router "Base" bgp group "IBGP_ABR" export policy ["EXPORT-TO-ABR"]
+    /configure router "Base" bgp neighbor "10.1.1.1" description "ABR"
+    /configure router "Base" bgp neighbor "10.1.1.1" group "IBGP_ABR"
+    /configure router "Base" mpls admin-state enable
+    /configure router "Base" mpls interface "ABR" admin-state enable
+    /configure router "Base" mpls interface "RED-R1" admin-state enable
+    /configure router "Base" mpls interface "system" admin-state enable
+    /configure router "Base" mpls path "LOOSE" admin-state enable
+    /configure router "Base" mpls lsp-template "AUTOMESH" admin-state enable
+    /configure router "Base" mpls lsp-template "AUTOMESH" type p2p-rsvp-mesh
+    /configure router "Base" mpls lsp-template "AUTOMESH" default-path "LOOSE"
+    /configure router "Base" mpls lsp-template "AUTOMESH" path-computation-method local-cspf
+    /configure router "Base" mpls lsp-template "AUTOMESH" fast-reroute frr-method facility
+    /configure router "Base" mpls lsp "ABR" admin-state enable
+    /configure router "Base" mpls lsp "ABR" type p2p-rsvp
+    /configure router "Base" mpls lsp "ABR" to 10.1.1.1
+    /configure router "Base" mpls lsp "ABR" rsvp-resv-style ff
+    /configure router "Base" mpls lsp "ABR" adspec true
+    /configure router "Base" mpls lsp "ABR" path-computation-method local-cspf
+    /configure router "Base" mpls lsp "ABR" fast-reroute frr-method one-to-one
+    /configure router "Base" { mpls lsp "ABR" primary "LOOSE" }
+    /configure router "Base" mpls auto-lsp "AUTOMESH" policy ["PS-LSP-AUTOMESH"]
+    /configure router "Base" ospf 0 admin-state enable
+    /configure router "Base" ospf 0 reference-bandwidth 1000000000000
+    /configure router "Base" ospf 0 traffic-engineering true
+    /configure router "Base" ospf 0 area 0.0.0.1 stub summaries true
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "ABR" admin-state enable
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "ABR" interface-type point-to-point
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "ABR" metric 100
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "ABR" bfd-liveness remain-down-on-failure true
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "RED-R1" admin-state enable
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "RED-R1" interface-type point-to-point
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "RED-R1" metric 100
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "RED-R1" bfd-liveness remain-down-on-failure true
+    /configure router "Base" ospf 0 area 0.0.0.1 interface "system" passive true
+    /configure router "Base" rsvp admin-state enable
+    /configure router "Base" rsvp implicit-null-label true
+    /configure router "Base" rsvp interface "ABR" admin-state enable
+    /configure router "Base" rsvp interface "ABR" bfd-liveness true
+    /configure router "Base" rsvp interface "RED-R1" admin-state enable
+    /configure router "Base" rsvp interface "RED-R1" bfd-liveness true
+    /configure router "Base" rsvp interface "system" bfd-liveness true
+

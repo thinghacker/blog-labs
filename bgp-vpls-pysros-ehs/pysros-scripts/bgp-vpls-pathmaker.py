@@ -1,3 +1,7 @@
+# This script (including all errors) was assembled by Adam Booth using ideas
+# from others including the pysros documentation, example code and stackoverflow
+# it probably isn't production grade but it seems to work well enough to
+# demonstrate that it has potential!
 import sys
 from pysros.management import connect
 from pysros.management import sros
@@ -196,7 +200,7 @@ def connect_router():
 
         # these are the default parameters that will be used unless
         # overriden on the commandline when invoking the script
-        router = "clab-interop-RED-R2"
+        router = "clab-vpls-RED-R1"
         username = "admin"
         password = "admin"
         if len(sys.argv) > 1:

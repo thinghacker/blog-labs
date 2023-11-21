@@ -72,7 +72,7 @@ Apply the L2VPN Configuration onto RED-R1 from from [service-configs/L2VPN-RFC47
 Apply the L2VPN Configuration onto RED-R2 from from [service-configs/L2VPN-RFC4761/RED-R2-BGP-VPLS.cfg](service-configs/L2VPN-RFC4761/RED-R2-BGP-VPLS.cfg):
 
 ```
-/configure service vpls "L2VPN-600" admin-state enable
+    /configure service vpls "L2VPN-600" admin-state enable
     /configure service vpls "L2VPN-600" service-id 600
     /configure service vpls "L2VPN-600" customer "1"
     /configure service vpls "L2VPN-600" stp admin-state disable
@@ -696,4 +696,103 @@ So quite a bit of tedious work here, to make the BGP-VPLS service work. The more
 
 If we intend to keep working with BGP-VPLS, this definitely sounds like a job for automation.  Fortunately SROS supports some advanced capabilities through the use of python scripts (pySROS) that can be run on the router directly, off the router (on a server) against the router.  Then we can decide when to run the scripts - either through a manual invocation, based on a timer using cron, or in this case using the event handler system to trigger the script when a particular event occurs in the logs.
 
-This will be demonstrated in the scenario [Using pySROS and Event Handler System for easier BGP-VPLS Service Provisioning](04_PySROSandEHS.md)
+While this will be demonstrated in the scenario [Using pySROS and Event Handler System for easier BGP-VPLS Service Provisioning](04_PySROSandEHS.md) a quick taste as to what can be done with pySROS with off router configurations is below.
+
+[pysros-scripts/vpls-mactable.py](pysros-scripts/vpls-mactable.py) is a script that can be run on the router locally or remotely to one of more routers.
+
+pySROS can be installed following the instructions on [https://github.com/nokia/pysros](https://github.com/nokia/pysros)
+
+once setup the vpls-mactable.py script can be executed with the following parameters
+
+``` python pysros-scripts/vpls-mactable.py -u admin -p admin -r clab-vpls-red-r1:clab-vpls-red-r2:clab-vpls-blue-r1 -v L2VPN-600```
+
+-u and -p specify the credentials that the script needs to use to authentication against the routers of interest
+-r specifies one or more routers to query (multiple routers are separated using a colon)
+-v specifies the VPLS instance (if you use "all" it will scan all VPLS instances)
+
+This script then can quickly scan each of the routers for the VPLS instance L2VPN-600 and list the associated MAC address table in one place:
+
+```
+$ python pysros-scripts/vpls-mactable.py -u admin -p admin -r clab-vpls-red-r1:clab-vpls-red-r2:clab-vpls-blue-r1 -v L2VPN-600
+NE:RED-R1(System Address:10.0.1.1)
+VPLS:L2VPN-600
++-- aa:c1:ab:22:a8:24:
+|   +-- address: aa:c1:ab:22:a8:24
+|   +-- locale: sap
+|   +-- sap: 1/1/3:600
+|   +-- type: learned
+|   +-- last-update: 1970-01-01T00:00:00.0Z
+|   +-- age: 0
+|   `-- protected-mac: False
++-- aa:c1:ab:4d:4d:11:
+|   +-- address: aa:c1:ab:4d:4d:11
+|   +-- locale: sdp-bind
+|   +-- sdp-bind: 15258:4294967295
+|   +-- type: learned
+|   +-- last-update: 1970-01-01T00:00:00.0Z
+|   +-- age: 0
+|   `-- protected-mac: False
+`-- aa:c1:ab:0a:1d:5e:
+    +-- address: aa:c1:ab:0a:1d:5e
+    +-- locale: sdp-bind
+    +-- sdp-bind: 15513:4294967294
+    +-- type: learned
+    +-- last-update: 1970-01-01T00:00:00.0Z
+    +-- age: 0
+    `-- protected-mac: False
+########################################
+NE:RED-R2(System Address:10.0.1.2)
+VPLS:L2VPN-600
++-- aa:c1:ab:22:a8:24:
+|   +-- address: aa:c1:ab:22:a8:24
+|   +-- locale: sdp-bind
+|   +-- sdp-bind: 15257:4294967295
+|   +-- type: learned
+|   +-- last-update: 1970-01-01T00:00:00.0Z
+|   +-- age: 0
+|   `-- protected-mac: False
++-- aa:c1:ab:4d:4d:11:
+|   +-- address: aa:c1:ab:4d:4d:11
+|   +-- locale: sap
+|   +-- sap: 1/1/3:600
+|   +-- type: learned
+|   +-- last-update: 1970-01-01T00:00:00.0Z
+|   +-- age: 0
+|   `-- protected-mac: False
+`-- aa:c1:ab:0a:1d:5e:
+    +-- address: aa:c1:ab:0a:1d:5e
+    +-- locale: sdp-bind
+    +-- sdp-bind: 15513:4294967294
+    +-- type: learned
+    +-- last-update: 1970-01-01T00:00:00.0Z
+    +-- age: 0
+    `-- protected-mac: False
+########################################
+NE:BLUE-R1(System Address:10.0.2.1)
+VPLS:L2VPN-600
++-- aa:c1:ab:22:a8:24:
+|   +-- address: aa:c1:ab:22:a8:24
+|   +-- locale: sdp-bind
+|   +-- sdp-bind: 15257:4294967295
+|   +-- type: learned
+|   +-- last-update: 1970-01-01T00:00:00.0Z
+|   +-- age: 0
+|   `-- protected-mac: False
++-- aa:c1:ab:4d:4d:11:
+|   +-- address: aa:c1:ab:4d:4d:11
+|   +-- locale: sdp-bind
+|   +-- sdp-bind: 15258:4294967294
+|   +-- type: learned
+|   +-- last-update: 1970-01-01T00:00:00.0Z
+|   +-- age: 0
+|   `-- protected-mac: False
+`-- aa:c1:ab:0a:1d:5e:
+    +-- address: aa:c1:ab:0a:1d:5e
+    +-- locale: sap
+    +-- sap: 1/1/3:600
+    +-- type: learned
+    +-- last-update: 1970-01-01T00:00:00.0Z
+    +-- age: 0
+    `-- protected-mac: False
+########################################
+```

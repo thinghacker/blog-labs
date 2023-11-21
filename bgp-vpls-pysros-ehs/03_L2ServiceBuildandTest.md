@@ -46,7 +46,6 @@ One RED-R1, RED-R2 and BLUE-R1 apply the following configuration lines from [ser
     /configure service pw-template "BGP-VPLS" provisioned-sdp use
     /configure service pw-template "BGP-VPLS" control-word true
     /configure service pw-template "BGP-VPLS" split-horizon-group name "MESH"
-
 ```
 
 ## Initial Service Configuration (RED-R1 and RED-R2)
@@ -192,7 +191,6 @@ A:admin@RED-R2# info state router tunnel-table ipv4 tunnel 10.0.1.1/32 list-inde
     }
 
 [/]
-
 ```
 This is the same tunnel with two next-hops (via RED-R1 and via ABR)
 
@@ -475,7 +473,6 @@ A:admin@BLUE-R1# back
 ### On BLUE-R1 create the SDP to RED-R2 (10.0.1.2) using the bgp-tunnel mode of operation
 
 ```
-
 [pr:/configure service]
 A:admin@BLUE-R1# sdp 2
 
@@ -651,8 +648,8 @@ No. of MAC Entries: 3
 -------------------------------------------------------------------------------
 Legend:L=Learned O=Oam P=Protected-MAC C=Conditional S=Static Lf=Leaf T=Trusted
 ===============================================================================
-
 ```
+
 ### Check MAC Address Table on RED-R2 L2VPN-600
 ```
 A:admin@RED-R2# show service id "600" fdb detail

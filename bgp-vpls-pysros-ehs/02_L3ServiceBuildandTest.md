@@ -30,7 +30,7 @@ ssh into each of the PE routers and apply the configurations.
 For example with RED-R1:
 
 ```
-adam@m4600-cl:~/bgp-vpls-pysros-ehs$ ssh admin@clab-vpls-red-r1
+$ ssh admin@clab-vpls-red-r1
 
 admin@clab-vpls-red-r1's password:
 
@@ -106,7 +106,6 @@ A:admin@RED-R1# commit
 [pr:/configure]
 A:admin@RED-R1# exit all
 INFO: CLI #2074: Exiting private configuration mode
-
 ```
 
 Apply the configuration to RED-R2 and BLUE-R1 as well (ensuring to enter configuration private and then using commit to apply the changes, and finally using exit all to leave configuration mode)
@@ -191,7 +190,6 @@ Flags: B = BGP or MPLS backup hop available
        E = Inactive best-external BGP route
        k = RIB-API or Forwarding Policy backup hop
 ===============================================================================
-
 ```
 
 ### RED-R2 can ping RED-R2-CLIENT in router-instance L3VPN-100
@@ -345,7 +343,6 @@ Flags: B = BGP or MPLS backup hop available
        E = Inactive best-external BGP route
        k = RIB-API or Forwarding Policy backup hop
 ===============================================================================
-
 ```
 
 ### RED-R1-CLIENT to RED-R2-CLIENT reachability check

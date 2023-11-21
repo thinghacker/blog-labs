@@ -1,5 +1,7 @@
 # Containerlab based Nokia Seamless-MPLS demo including pySROS and Event Handler System to simplify BGP-VPLS (RFC4761) configuration activities when using RSVP-TE signaled LSPs
 
+The article Supporting this is at https://www.thingnetwork.io/pysros-and-event-handler-system-makes-bgp-vpls-easier/
+
 This exercise describes is a simple Network that used BGP Labeled-Unicast (RFC3107) to build a Multi-OSPF area Seamless-MPLS network.
 
 > If you are in a hurry and are just interested in the pySROS script and using it with EHS?
@@ -34,3 +36,5 @@ More information on pySROS can be found on it's github page - <https://github.co
 The Nokia Developer Portal also provides information on pySROS <https://network.developer.nokia.com/static/sr/learn/pysros/latest/introduction.html>
 
 Containerlab is available at <https://containerlab.dev/>
+
+This lab and associated python scripts are by Adam Booth and are free to use if it helps!
